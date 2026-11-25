@@ -1,0 +1,491 @@
+/* Screens and menus. The canvas draws the game itself (and the story scenes).
+   Every size is in rem: engine.js scales the root font size with the stage,
+   so the menus always match the 1280x720 canvas. */
+
+:root {
+  --ink: #060a1c;
+  --navy: #17284a;
+  --navy-deep: #0c1530;
+  --navy-light: #2a3f6e;
+  --cyan: #12eadc;
+  --cyan-light: #b8fbf5;
+  --cream: #f8f3e0;
+  --pink: #ff8f9c;
+  --red: #ef4056;
+  --gold: #ffd35c;
+  --font: "Arial Rounded MT Bold", ui-rounded, "Segoe UI", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #02040c;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  font-family: var(--font);
+  font-weight: 700;
+  color: var(--cream);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#stage {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+#game { display: block; width: 100%; height: 100%; }
+
+#ui { position: absolute; inset: 0; pointer-events: none; }
+
+/* ---------- screens ---------- */
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+  background: radial-gradient(ellipse at center, rgba(6, 10, 28, 0.55), rgba(6, 10, 28, 0.9));
+  animation: screen-in 0.3s ease-out both;
+}
+.screen[hidden] { display: none; }
+
+@keyframes screen-in { from { opacity: 0; } to { opacity: 1; } }
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+
+.heading {
+  margin: 0;
+  font-size: 4.6rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--cream);
+  -webkit-text-stroke: 0.5rem var(--ink);
+  paint-order: stroke fill;
+}
+
+/* Kurai's portrait, with a cream sticker edge so the navy fur reads on dark panels. */
+.portrait {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter:
+    drop-shadow(0.22rem 0 0 var(--cream)) drop-shadow(-0.22rem 0 0 var(--cream))
+    drop-shadow(0 0.22rem 0 var(--cream)) drop-shadow(0 -0.22rem 0 var(--cream))
+    drop-shadow(0 0.6rem 0 rgba(6, 10, 28, 0.55));
+}
+
+/* ---------- title ---------- */
+
+/* The picture fills the screen: the cast stands on the left, the logo and menu sit in the open sky on the right. */
+.screen-title { display: block; background: var(--ink); overflow: hidden; }
+
+.title-art {
+  position: absolute;
+  inset: 0;
+  background: url("../assets/title-art.jpg") center / cover no-repeat;
+  transform-origin: 30% 60%;
+  animation: title-drift 26s ease-in-out infinite alternate;
+}
+/* the Lantern's light, breathing (placed over the Lantern in the picture) */
+.title-art::before {
+  content: "";
+  position: absolute;
+  left: 48.4%;
+  top: 10.5%;
+  width: 34rem;
+  height: 34rem;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(184, 251, 245, 0.5), rgba(18, 234, 220, 0.16) 30%, rgba(18, 234, 220, 0) 62%);
+  mix-blend-mode: screen;
+  animation: lantern 3.6s ease-in-out infinite;
+}
+/* darker sky behind the menu */
+.title-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(6, 10, 28, 0) 44%, rgba(6, 10, 28, 0.62) 72%),
+    linear-gradient(180deg, rgba(6, 10, 28, 0) 70%, rgba(6, 10, 28, 0.5));
+}
+@keyframes title-drift { from { transform: scale(1); } to { transform: scale(1.045); } }
+@keyframes lantern {
+  0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(0.92); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
+}
+
+.title-copy {
+  position: absolute;
+  left: 45.5rem;
+  top: 50%;
+  width: 31.5rem;
+  transform: translateY(-50%);
+}
+
+.logo { margin: 0 0 0.8rem; text-transform: uppercase; transform: rotate(-3deg); transform-origin: left center; }
+.logo-main {
+  display: block;
+  font-size: 8.8rem;
+  line-height: 0.92;
+  letter-spacing: 0.03em;
+  color: var(--cream);
+  -webkit-text-stroke: 0.9rem var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0.45rem 0.55rem 0 var(--cyan);
+}
+.logo-sub {
+  display: inline-block;
+  margin-top: 0.9rem;
+  padding: 0.35rem 1rem 0.3rem;
+  font-size: 1.75rem;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  background: var(--cyan);
+  border: 0.28rem solid var(--ink);
+  border-radius: 0.7rem;
+  box-shadow: 0 0.3rem 0 var(--ink);
+}
+
+.tagline { margin: 1.3rem 0 1.4rem; font-size: 1.35rem; color: var(--cream); text-shadow: 0 0.15rem 0 var(--ink); }
+
+/* Before the first key: the logo alone, waiting (the browser allows no sound until then) */
+.press {
+  margin: 2.2rem 0 0;
+  font-size: 1.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan-light);
+  text-shadow: 0 0.18rem 0 var(--ink);
+  animation: press 0.9s ease-in-out infinite alternate;
+}
+.press[hidden], .title-menu[hidden] { display: none; }
+@keyframes press { from { opacity: 0.35; } to { opacity: 1; } }
+.title-menu { animation: menu-in 0.45s cubic-bezier(0.2, 1.2, 0.4, 1) both; }
+@keyframes menu-in { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: none; } }
+
+.title-note { min-height: 1.3rem; margin: 0.9rem 0 0.7rem; font-size: 1rem; color: var(--gold); text-shadow: 0 0.12rem 0 var(--ink); }
+
+/* mission list */
+.missions { display: grid; gap: 0.45rem; }
+.chip {
+  display: grid;
+  grid-template-columns: 2.6rem 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.38rem 1rem 0.34rem 0.45rem;
+  font: inherit;
+  font-size: 1.05rem;
+  text-align: left;
+  color: var(--cream);
+  background: rgba(12, 21, 48, 0.82);
+  border: 0.2rem solid var(--ink);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.08s ease, background-color 0.12s ease;
+}
+.chip:hover:not(:disabled) { transform: translateX(0.25rem); background: var(--navy-light); }
+.chip:focus-visible { outline: 0.2rem solid var(--cream); outline-offset: 0.15rem; }
+.chip:disabled { cursor: default; color: rgba(248, 243, 224, 0.4); background: rgba(12, 21, 48, 0.55); }
+.chip-tag {
+  padding: 0.14rem 0 0.08rem;
+  font-size: 0.95rem;
+  text-align: center;
+  color: var(--ink);
+  background: var(--cyan);
+  border-radius: 999px;
+}
+.chip:disabled .chip-tag { background: rgba(248, 243, 224, 0.3); }
+.chip-note { font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cyan-light); opacity: 0.85; }
+
+/* ---------- buttons ---------- */
+
+.actions { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+.actions-stack { flex-direction: column; align-items: stretch; margin: 1.6rem 0; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 0.75rem 1.6rem;
+  font: inherit;
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+  color: var(--cream);
+  background: var(--navy-light);
+  border: 0.26rem solid var(--ink);
+  border-radius: 999px;
+  box-shadow: 0 0.38rem 0 var(--ink);
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.12s ease;
+}
+.btn[hidden] { display: none; }
+.btn:hover { transform: translateY(-0.12rem); box-shadow: 0 0.5rem 0 var(--ink); background: #3a5592; }
+.btn:active { transform: translateY(0.26rem); box-shadow: 0 0.12rem 0 var(--ink); }
+.btn:focus-visible { outline: 0.22rem solid var(--cream); outline-offset: 0.22rem; }
+
+.btn-primary { color: var(--ink); background: var(--cyan); font-size: 1.5rem; padding: 0.85rem 1.9rem; }
+.btn-primary:hover { background: var(--cyan-light); }
+
+kbd {
+  display: inline-block;
+  padding: 0.12rem 0.5rem 0.08rem;
+  font: inherit;
+  font-size: 0.78em;
+  color: var(--cream);
+  background: var(--navy-deep);
+  border: 0.14rem solid rgba(248, 243, 224, 0.35);
+  border-radius: 0.4rem;
+}
+.btn-primary kbd { color: var(--ink); background: rgba(6, 10, 28, 0.14); border-color: rgba(6, 10, 28, 0.4); }
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.5rem;
+  margin: 1.3rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1.05rem;
+  color: rgba(248, 243, 224, 0.8);
+}
+
+/* ---------- switches (music, sound effects, screen shake) ---------- */
+
+.switches { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 0; }
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.3rem 0.75rem 0.26rem 0.85rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--cream);
+  background: rgba(12, 21, 48, 0.82);
+  border: 0.2rem solid var(--ink);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.12s ease;
+}
+.switch[hidden] { display: none; }
+.switch-corner { position: absolute; left: 1.2rem; bottom: 1rem; }
+.switch b { min-width: 1.75rem; font-size: 0.85em; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cyan); }
+.switch[aria-pressed="false"] { color: rgba(248, 243, 224, 0.6); }
+.switch[aria-pressed="false"] b { color: var(--pink); }
+.switch:hover { background: var(--navy-light); }
+.switch:focus-visible { outline: 0.2rem solid var(--cream); outline-offset: 0.15rem; }
+
+/* "Music off": a line that shows for a moment when a switch changes */
+.toast {
+  position: absolute;
+  left: 50%;
+  top: 6rem;
+  margin: 0;
+  padding: 0.4rem 1.1rem 0.34rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--cream);
+  background: var(--navy-deep);
+  border: 0.2rem solid var(--ink);
+  border-radius: 999px;
+  box-shadow: 0 0.25rem 0 var(--ink);
+  opacity: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.toast.show { animation: toast 1.7s ease both; }
+@keyframes toast {
+  0% { opacity: 0; transform: translate(-50%, -0.6rem); }
+  10%, 72% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, 0); }
+}
+
+/* ---------- cards (pause, victory, game over) ---------- */
+
+.card {
+  background: linear-gradient(180deg, #1d3159, var(--navy));
+  border: 0.4rem solid var(--ink);
+  border-radius: 2rem;
+  box-shadow: 0.6rem 0.7rem 0 var(--cyan);
+  animation: card-in 0.4s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@keyframes card-in { from { transform: translateY(1.5rem) scale(0.94); } to { transform: none; } }
+
+.card-small { width: 32rem; padding: 2.2rem 2.6rem; text-align: center; }
+.card-small .controls { justify-content: center; margin-top: 0.4rem; }
+.card-small .switches { justify-content: center; flex-wrap: nowrap; gap: 0.35rem; }
+.card-small .switch { font-size: 0.88rem; padding-left: 0.7rem; padding-right: 0.6rem; }
+.objective { margin: 1rem 0 0; font-size: 1.1rem; line-height: 1.35; color: var(--cyan-light); }
+.objective:empty { display: none; }
+
+.card-result {
+  display: grid;
+  grid-template-columns: 17rem 1fr;
+  gap: 2.4rem;
+  align-items: center;
+  width: 60rem;
+  padding: 2.4rem 2.8rem 2.6rem 2.2rem;
+}
+.card-defeat { box-shadow: 0.6rem 0.7rem 0 var(--red); }
+.card-defeat .eyebrow { color: var(--pink); }
+
+.result-art { position: relative; }
+.portrait-cheer { animation: cheer 0.7s ease-in-out infinite alternate; }
+@keyframes cheer {
+  from { transform: translateY(0.3rem) rotate(-3deg); }
+  to { transform: translateY(-0.7rem) rotate(3deg); }
+}
+.portrait-down { transform: rotate(-8deg) translateY(0.6rem); filter: grayscale(0.7) brightness(0.9)
+    drop-shadow(0.22rem 0 0 #b9bdc9) drop-shadow(-0.22rem 0 0 #b9bdc9)
+    drop-shadow(0 0.22rem 0 #b9bdc9) drop-shadow(0 -0.22rem 0 #b9bdc9); }
+
+.rank {
+  position: absolute;
+  right: -0.6rem;
+  top: -0.4rem;
+  display: grid;
+  place-items: center;
+  width: 5.6rem;
+  height: 5.6rem;
+  font-size: 3.4rem;
+  color: var(--ink);
+  background: var(--gold);
+  border: 0.32rem solid var(--ink);
+  border-radius: 50%;
+  box-shadow: 0 0.35rem 0 var(--ink);
+  transform: rotate(12deg);
+}
+
+.result-line { margin: 0.9rem 0 1.3rem; font-size: 1.25rem; line-height: 1.35; color: rgba(248, 243, 224, 0.9); }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+  margin: 0 0 1rem;
+}
+.stats > div {
+  padding: 0.7rem 0.9rem 0.6rem;
+  background: var(--navy-deep);
+  border: 0.22rem solid var(--ink);
+  border-radius: 1rem;
+}
+.stats dt { font-size: 0.82rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cyan); }
+.card-defeat .stats dt { color: var(--pink); }
+.stats dd { margin: 0.2rem 0 0; font-size: 1.6rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.best { min-height: 1.3rem; margin: 0 0 1.3rem; font-size: 1rem; color: var(--gold); }
+
+@media (prefers-reduced-motion: reduce) {
+  .title-art, .title-art::before, .portrait-cheer, .card, .screen, .title-menu, .press { animation: none; }
+  .toast.show { animation-timing-function: steps(1, end); }
+}
+
+/* ---------- loading ---------- */
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan-light);
+  pointer-events: none;
+}
+.loading[hidden] { display: none; }
+
+/* ---------- keys or touch ----------
+   body.touch is set while the player is on a touch screen (js/core/input.js). Hints come in two
+   versions, .if-keys and .if-touch, and only the one that applies is shown. */
+
+.if-touch { display: none; }
+body.touch .if-touch { display: revert; }
+body.touch .if-keys, body.touch kbd { display: none; }
+body.touch ul.controls.if-touch { display: flex; }
+.controls b { color: var(--cyan-light); }
+
+/* A phone held upright: the stage lies on its side and fills the screen (js/core/engine.js). */
+#stage.turned {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+/* Fingers: no scrolling, no zooming, no text selection, no long-press menu. */
+html, body { overscroll-behavior: none; touch-action: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+#game { touch-action: none; }
+
+/* Bigger things to press, in the room the key hints leave (and, on the title, the room the
+   tagline and a slightly smaller logo leave once the menu is up). */
+body.touch .btn { padding: 0.95rem 2rem; font-size: 1.5rem; }
+body.touch .btn-primary { padding: 1.05rem 2.4rem; font-size: 1.75rem; }
+body.touch .chip { padding: 0.5rem 1.1rem 0.46rem 0.55rem; font-size: 1.12rem; }
+body.touch .switch { padding: 0.6rem 0.7rem 0.56rem 0.8rem; font-size: 0.95rem; }
+body.touch .card-small .switch { padding: 0.6rem 0.8rem; font-size: 1rem; }
+body.touch .title-copy:has(.title-menu:not([hidden])) .tagline { display: none; }
+body.touch .title-copy:has(.title-menu:not([hidden])) .logo-main { font-size: 7.2rem; }
+body.touch .title-copy:has(.title-menu:not([hidden])) .logo { margin-bottom: 1.4rem; }
+body.touch .controls { margin-top: 0.9rem; }
+body.touch .title-note { margin: 0.7rem 0 0.6rem; }
+
+/* The buttons that stand in for the Esc key: pause in a mission, skip in a story scene. */
+.touch-btn {
+  position: absolute;
+  display: none;
+  pointer-events: auto;
+  font: inherit;
+  color: var(--cream);
+  background: rgba(12, 21, 48, 0.72);
+  border: 0.22rem solid var(--ink);
+  cursor: pointer;
+}
+.touch-btn:active { background: var(--navy-light); }
+.touch-pause {
+  right: 1.2rem;
+  bottom: 1.1rem;
+  width: 4.6rem;
+  height: 4.6rem;
+  place-content: center;
+  grid-auto-flow: column;
+  gap: 0.6rem;
+  border-radius: 50%;
+  opacity: 0.8;
+}
+.touch-pause i { display: block; width: 0.62rem; height: 1.7rem; background: var(--cream); border-radius: 0.2rem; }
+.touch-skip {
+  right: 1rem;
+  bottom: 0.32rem;
+  padding: 0.42rem 1.4rem 0.36rem;
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 999px;
+}
+body.touch[data-scene="mission"]:not([data-screen]) .touch-pause { display: grid; }
+body.touch[data-scene="story"] .touch-skip { display: block; }

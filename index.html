@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two Space Operas</title>
+<link rel="icon" href="data:,">
+<meta name="description" content="Claude Code and Codex got the same five prompts, one per day. Play both games and pick your favorite.">
+<style>
+  :root { --bg: #0f1016; --card: #1a1c25; --text: #ececf2; --muted: #a0a3b4; --line: #2a2d3a; --btn: #ececf2; --btn-text: #0f1016; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 40px 16px 56px; }
+  h1 { font-size: clamp(26px, 4vw, 38px); line-height: 1.15; margin: 0 0 12px; }
+  .lead { color: var(--muted); max-width: 720px; margin: 0 0 32px; }
+  .games { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .game { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+  .game img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .agent { font-size: 14px; color: var(--muted); }
+  .title { font-size: 21px; font-weight: 650; }
+  .body p { margin: 4px 0 14px; color: var(--muted); font-size: 15px; flex: 1; }
+  .play { align-self: flex-start; background: var(--btn); color: var(--btn-text); text-decoration: none; font-weight: 650; padding: 10px 22px; border-radius: 999px; }
+  .play:hover { opacity: .85; }
+  .notes { margin-top: 32px; color: var(--muted); font-size: 15px; }
+  .notes a { color: var(--text); }
+  @media (max-width: 720px) { .games { grid-template-columns: 1fr; } main { padding-top: 28px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Claude Code vs Codex: Same 5 Prompts, Two Space Operas</h1>
+  <p class="lead">Both agents got exactly the same five prompts, one per day, each in its own folder. Plain JavaScript, no libraries, every picture drawn in code or generated from their own prompts, and all the music and sound effects synthesized in code. These are the games as they stood at the end of the week. Play both, then tell us which one you prefer.</p>
+  <div class="games">
+    <article class="game">
+      <img src="claude-code/assets/title-art.jpg" alt="Title art of Kurai and the Fallen Fleet">
+      <div class="body">
+        <span class="agent">Claude Code · Fable 5.2</span>
+        <span class="title">Kurai and the Fallen Fleet</span>
+        <p>A side-scrolling shooter in four missions. Keyboard or touch screen.</p>
+        <a class="play" href="claude-code/index.html">Play</a>
+      </div>
+    </article>
+    <article class="game">
+      <img src="codex/assets/starfall.webp" alt="Title art of Starfall: The Last Relay">
+      <div class="body">
+        <span class="agent">Codex · GPT-6.2-Astra</span>
+        <span class="title">Starfall: The Last Relay</span>
+        <p>A vertical shooter in four missions. Keyboard or touch screen.</p>
+        <a class="play" href="codex/index.html">Play</a>
+      </div>
+    </article>
+  </div>
+  <p class="notes">Sound starts after your first key press or tap: browsers block audio before that. Each game has its own music and sound switches on the title screen.<br>
+  Watch how they were built: <a href="https://youtu.be/57I4E70K4og">the video on Kurai Kuto</a>.</p>
+</main>
+</body>
+</html>

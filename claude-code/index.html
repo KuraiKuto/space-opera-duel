@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <title>Kurai and the Fallen Fleet</title>
+  <meta name="description" content="A space opera for the browser. Kurai, captain of the last ship of the Lantern Fleet, against the Pyre: four missions, a rival, a moth and a mothership.">
+  <meta name="theme-color" content="#060a1c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Kurai and the Fallen Fleet">
+  <meta property="og:description" content="A space opera for the browser. The last ship of the Lantern Fleet. Still flying.">
+  <meta property="og:image" content="assets/title-art.jpg">
+  <link rel="icon" href="assets/icon.png">
+  <link rel="apple-touch-icon" href="assets/icon.png">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+  <div id="stage">
+    <canvas id="game" width="1280" height="720" aria-label="Game view"></canvas>
+    <p class="loading" id="loading">Loading</p>
+    <noscript><p class="loading">This game needs JavaScript to run.</p></noscript>
+
+    <div id="ui">
+      <!-- Title -->
+      <section class="screen screen-title" id="screen-title" hidden>
+        <div class="title-art" role="img" aria-label="Kurai the navy fox with Akari the owl and Guren the red wolf, under a distant shining Lantern"></div>
+        <div class="title-copy">
+          <p class="eyebrow">A space opera</p>
+          <h1 class="logo">
+            <span class="logo-main">Kurai</span>
+            <span class="logo-sub">and the Fallen Fleet</span>
+          </h1>
+          <p class="tagline">The last ship of the Lantern Fleet. Still flying.</p>
+          <p class="press" data-if="cold"><span class="if-keys">Press any key</span><span class="if-touch">Tap to start</span></p>
+          <div class="title-menu" data-unless="cold">
+            <div class="actions">
+              <button class="btn btn-primary" data-action="continue" data-if="hasResume" hidden>Continue <kbd>Enter</kbd></button>
+              <button class="btn" data-action="start" data-if="hasResume" hidden>New story</button>
+              <button class="btn btn-primary" data-action="start" data-unless="hasResume"><span data-field="startLabel"></span> <kbd>Enter</kbd></button>
+            </div>
+            <p class="title-note" data-field="note"></p>
+            <div class="missions" data-list="missions" aria-label="Missions"></div>
+            <ul class="controls if-keys">
+              <li><kbd>Arrows</kbd> / <kbd>WASD</kbd> fly</li>
+              <li><kbd>Space</kbd> fire</li>
+              <li><kbd>Esc</kbd> pause</li>
+            </ul>
+            <ul class="controls if-touch">
+              <li><b>Drag</b> anywhere to fly</li>
+              <li><b>Hold</b> to fire</li>
+            </ul>
+            <div class="switches" role="group" aria-label="Sound and screen shake">
+              <button class="switch" data-toggle="music">Music <b data-state></b> <kbd>M</kbd></button>
+              <button class="switch" data-toggle="sfx">Sound <b data-state></b> <kbd>N</kbd></button>
+              <button class="switch" data-toggle="shake">Shake <b data-state></b></button>
+            </div>
+          </div>
+        </div>
+        <!-- hidden where the browser has no full screen to offer (js/ui/screens.js) -->
+        <button class="switch switch-corner" data-toggle="fullscreen" data-unless="cold" hidden>Full screen <b data-state></b> <kbd>F</kbd></button>
+      </section>
+
+      <!-- Pause -->
+      <section class="screen" id="screen-pause" hidden>
+        <div class="card card-small">
+          <p class="eyebrow" data-field="mission">Mission on hold</p>
+          <h2 class="heading">Paused</h2>
+          <p class="objective" data-field="objective"></p>
+          <div class="actions actions-stack">
+            <button class="btn btn-primary" data-action="resume">Resume <kbd>Enter</kbd></button>
+            <button class="btn" data-action="restart">Restart mission</button>
+            <button class="btn" data-action="title">Quit to title</button>
+          </div>
+          <ul class="controls if-keys">
+            <li><kbd>Arrows</kbd> / <kbd>WASD</kbd> fly</li>
+            <li><kbd>Space</kbd> fire</li>
+          </ul>
+          <ul class="controls if-touch">
+            <li><b>Drag</b> anywhere to fly</li>
+            <li><b>Hold</b> to fire</li>
+          </ul>
+          <div class="switches" role="group" aria-label="Sound and screen shake">
+            <button class="switch" data-toggle="music">Music <b data-state></b> <kbd>M</kbd></button>
+            <button class="switch" data-toggle="sfx">Sound <b data-state></b> <kbd>N</kbd></button>
+            <button class="switch" data-toggle="shake">Shake <b data-state></b></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Victory -->
+      <section class="screen" id="screen-victory" hidden>
+        <div class="card card-result card-victory">
+          <div class="result-art">
+            <img class="portrait portrait-cheer" src="assets/kurai.png" alt="Kurai cheering">
+            <div class="rank" title="Rank"><span data-field="rank">A</span></div>
+          </div>
+          <div class="result-copy">
+            <p class="eyebrow" data-field="mission"></p>
+            <h2 class="heading">Victory!</h2>
+            <p class="result-line" data-field="line"></p>
+            <dl class="stats">
+              <div><dt>Score</dt><dd data-field="score"></dd></div>
+              <div><dt>Hull</dt><dd data-field="hull"></dd></div>
+              <div><dt data-field="extraLabel">Accuracy</dt><dd data-field="extra"></dd></div>
+              <div><dt>Time</dt><dd data-field="time"></dd></div>
+            </dl>
+            <p class="best" data-field="best"></p>
+            <div class="actions">
+              <button class="btn btn-primary" data-action="next" data-if="hasNext" hidden><span data-field="nextLabel"></span> <kbd>Enter</kbd></button>
+              <button class="btn" data-action="retry" data-if="hasNext" hidden>Play again</button>
+              <button class="btn btn-primary" data-action="retry" data-unless="hasNext">Play again <kbd>Enter</kbd></button>
+              <button class="btn" data-action="title">Title</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Game over -->
+      <section class="screen" id="screen-gameover" hidden>
+        <div class="card card-result card-defeat">
+          <div class="result-art">
+            <img class="portrait portrait-down" src="assets/kurai-alarm.png" alt="Kurai, dismayed">
+          </div>
+          <div class="result-copy">
+            <p class="eyebrow" data-field="mission"></p>
+            <h2 class="heading" data-field="heading">Game over</h2>
+            <p class="result-line" data-field="line"></p>
+            <dl class="stats">
+              <div><dt>Score</dt><dd data-field="score"></dd></div>
+              <div><dt>Wave</dt><dd data-field="wave"></dd></div>
+              <div><dt>Kills</dt><dd data-field="kills"></dd></div>
+              <div><dt>Time</dt><dd data-field="time"></dd></div>
+            </dl>
+            <div class="actions">
+              <button class="btn btn-primary" data-action="retry"><span data-field="retryLabel">Retry mission</span> <kbd>Enter</kbd></button>
+              <button class="btn" data-action="restart" data-if="hasCheckpoint" hidden>Restart mission</button>
+              <button class="btn" data-action="title">Title</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- A line that appears for a moment when a switch is changed with its key -->
+      <p class="toast" id="toast" role="status" hidden></p>
+
+      <!-- What a touch screen needs in place of the Esc key: shown only while a finger is the controller -->
+      <button class="touch-btn touch-pause" data-action="pause" aria-label="Pause"><i></i><i></i></button>
+      <button class="touch-btn touch-skip" data-action="skip">Skip</button>
+    </div>
+  </div>
+
+  <!-- No build step: plain scripts, loaded in dependency order. -->
+  <script src="js/core/namespace.js"></script>
+  <script src="js/core/util.js"></script>
+  <script src="js/core/dev.js"></script>
+  <script src="js/core/settings.js"></script>
+  <script src="js/core/input.js"></script>
+
+  <script src="js/audio/audio.js"></script>
+  <script src="js/audio/sfx.js"></script>
+  <script src="js/audio/instruments.js"></script>
+  <script src="js/audio/music.js"></script>
+  <script src="js/audio/songs/theme.js"></script>
+  <script src="js/audio/songs/battle.js"></script>
+  <script src="js/audio/songs/boss.js"></script>
+  <script src="js/audio/songs/eclipse.js"></script>
+  <script src="js/audio/songs/stings.js"></script>
+
+  <script src="js/core/assets.js"></script>
+  <script src="js/core/engine.js"></script>
+
+  <script src="js/art/draw.js"></script>
+  <script src="js/art/ships.js"></script>
+  <script src="js/art/eclipse.js"></script>
+  <script src="js/art/backdrop.js"></script>
+
+  <script src="js/game/fx.js"></script>
+  <script src="js/game/shots.js"></script>
+  <script src="js/game/enemies.js"></script>
+  <script src="js/game/enemies-shiver.js"></script>
+  <script src="js/game/enemies-meridian.js"></script>
+  <script src="js/game/enemies-eclipse.js"></script>
+  <script src="js/game/pickups.js"></script>
+  <script src="js/game/allies.js"></script>
+  <script src="js/game/allies-fleet.js"></script>
+  <script src="js/game/objectives.js"></script>
+  <script src="js/game/player.js"></script>
+  <script src="js/game/comms.js"></script>
+  <script src="js/game/director.js"></script>
+  <script src="js/game/hud.js"></script>
+  <script src="js/game/world.js"></script>
+
+  <script src="js/story/cast.js"></script>
+  <script src="js/story/story.js"></script>
+  <script src="js/story/s01-hollow-moon.js"></script>
+  <script src="js/story/s02-the-shiver.js"></script>
+  <script src="js/story/s03-meridian.js"></script>
+  <script src="js/story/s04-eclipse.js"></script>
+  <script src="js/story/s05-the-fleet.js"></script>
+  <script src="js/story/s06-lights-on.js"></script>
+  <script src="js/story/campaign.js"></script>
+
+  <script src="js/missions/missions.js"></script>
+  <script src="js/missions/m01-ashes.js"></script>
+  <script src="js/missions/m02-long-dark.js"></script>
+  <script src="js/missions/m03-last-lantern.js"></script>
+  <script src="js/missions/m04-lights-on.js"></script>
+
+  <script src="js/ui/screens.js"></script>
+  <script src="js/scenes/title.js"></script>
+  <script src="js/scenes/story.js"></script>
+  <script src="js/scenes/mission.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

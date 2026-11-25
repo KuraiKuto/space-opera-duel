@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Pilot the last mail cutter through four sectors in a pixel-art space opera about a missing convoy and an undelivered letter." />
+    <meta name="theme-color" content="#0a100f" />
+    <title>Starfall — The Last Relay</title>
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="js/mission.js"></script>
+    <script defer src="js/art.js"></script>
+    <script defer src="js/fleet-art.js"></script>
+    <script defer src="js/audio.js"></script>
+    <script defer src="js/feedback.js"></script>
+    <script defer src="js/fleet.js"></script>
+    <script defer src="js/campaign.js"></script>
+    <script defer src="js/game.js"></script>
+  </head>
+  <body>
+    <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <symbol id="logo" viewBox="0 0 32 32">
+        <path fill="currentColor" d="M14 2h4v5h3v6h3v5h3v3h3v7h-6v-3h-5v-4h-6v4H8v3H2v-7h3v-3h3v-5h3V7h3z" />
+        <path fill="#fff0fc" d="M14 10h4v8h-4z" />
+        <path fill="#8a577f" d="M13 25h6v3h-2v3h-2v-3h-2z" />
+      </symbol>
+      <symbol id="audio" viewBox="0 0 24 24">
+        <path d="M3 9h4l5-5v16l-5-5H3z" fill="currentColor" />
+        <path d="M15 8q5 4 0 8m3-11q8 7 0 14" fill="none" stroke="currentColor" stroke-width="2" />
+      </symbol>
+      <symbol id="note" viewBox="0 0 24 24"><path fill="currentColor" d="M9 4l12-2v14a4 4 0 1 1-2-3.5V7L11 8.5V18a4 4 0 1 1-2-3.5z"/></symbol>
+      <symbol id="pause" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M5 4h5v16H5zm9 0h5v16h-5z" />
+      </symbol>
+      <symbol id="pilot" viewBox="0 0 20 20">
+        <path
+          d="M6 2h8v2h2v7h-2v2H6v-2H4V4h2zm0 3v4h8V5zm-3 9h4v2h6v-2h4v2h2v3H1v-3h2z"
+          fill="currentColor"
+        />
+      </symbol>
+      <symbol id="status" viewBox="0 0 20 20">
+        <path d="M1 11h4l3-7 4 13 3-8h4" fill="none" stroke="currentColor" stroke-width="2" />
+      </symbol>
+      <symbol id="keyboard" viewBox="0 0 24 18">
+        <path
+          d="M1 2h22v14H1zM4 6h2m3 0h2m3 0h2m3 0h1M5 10h2m2 1h8"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+        />
+      </symbol>
+      <symbol id="shield" viewBox="0 0 18 18">
+        <path d="m9 2 6 2v5q-1 4-6 7-5-3-6-7V4z" stroke="currentColor" fill="none" stroke-width="1.6" />
+      </symbol>
+      <symbol id="hull" viewBox="0 0 18 18">
+        <path d="m9 2 6 12-6-3-6 3z" stroke="currentColor" fill="none" stroke-width="1.6" />
+      </symbol>
+      <symbol id="target" viewBox="0 0 22 22">
+        <g fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="11" cy="11" r="6.5" />
+          <path d="M11 1v5m0 10v5M1 11h5m10 0h5" />
+        </g>
+      </symbol>
+      <symbol id="crew" viewBox="0 0 24 24"><path d="M3 20v-3c0-5 12-5 12 0v3zM18 14c3 0 4 2 4 4v2h-4M18 5a3 3 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="9" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+      <symbol id="route" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="5" cy="17" r="2.5"/><circle cx="19" cy="6" r="2.5"/><path d="m7 16 3-6 4 3 3-5"/></g></symbol>
+      <symbol id="next" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+      <symbol id="play" viewBox="0 0 24 24"><path fill="currentColor" d="M5 3h3v2h3v2h3v2h3v2h3v2h-3v2h-3v2h-3v2H8v2H5z"/></symbol>
+    </svg>
+    <header class="top">
+      <div class="top-inner">
+        <div class="brand">
+          <svg><use href="#logo" /></svg><span>STARFALL</span><b>ARCADE</b>
+        </div>
+        <div class="actions">
+          <button id="expand" hidden aria-label="Enter full screen" title="Full screen"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 7V2h5m6 0h5v5m0 6v5h-5m-6 0H2v-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+          <button id="music" aria-label="Music" aria-pressed="true"><svg><use href="#note" /></svg><span>MUSIC ON</span></button>
+          <button id="sound" aria-label="Sound effects" aria-pressed="true">
+            <svg><use href="#audio" /></svg><span>SFX ON</span></button
+          ><button id="pauseBtn" hidden aria-label="Pause mission">
+            <svg><use href="#pause" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main>
+      <div id="titleScreen">
+        <section class="cover" aria-labelledby="gameTitle">
+          <div class="cover-content">
+            <div class="cover-kicker"><i></i>MERIDIAN LINE <span>/</span> SPACE OPERA</div>
+            <h1 id="gameTitle">THE LAST<br>RELAY</h1>
+            <p>The convoy vanished eleven years ago. This morning, someone knocked for the mail.</p>
+            <div class="cover-actions">
+              <button class="primary" id="begin"><svg><use href="#play"/></svg><span>BEGIN CAMPAIGN</span></button>
+              <button class="secondary" id="playFinale">PLAY FINALE<svg><use href="#next"/></svg></button>
+            </div>
+          </div>
+        </section>
+        <section class="route-section" aria-labelledby="routeHeading">
+          <div class="section-head"><svg><use href="#route"/></svg><h2 id="routeHeading">MISSION ROUTE</h2><small id="sectorCount"></small><i></i><button id="dossier" class="dossier-link"><svg><use href="#crew"/></svg>CREW DOSSIER</button></div>
+          <div class="route-grid" id="routeCards"></div>
+        </section>
+      </div>
+      <div id="flightScreen" hidden>
+        <div class="console">
+          <section class="arena-panel" aria-label="Mission playfield">
+            <div class="arena" id="arena">
+              <canvas
+                id="game"
+                width="800"
+                height="470"
+                tabindex="0"
+                aria-label="Pilot Kurai’s ship with WASD or arrow keys and fire with Space. On touchscreens drag to move and fire."
+              ></canvas>
+              <div class="hud">
+                <div class="score"><span>SCORE</span><strong id="score">000000</strong></div>
+                <div class="wave">
+                  <span id="objectiveLabel">WAVE</span><strong><b id="wave">01</b><em> / </em><b id="objectiveTotal">03</b></strong><small id="signalClock" hidden></small>
+                </div>
+              </div>
+              <div class="overlay" id="overlay" hidden>
+                <div class="dialog">
+                  <div class="eyebrow" id="resultLabel"></div>
+                  <h2 id="resultTitle"></h2>
+                  <p id="resultText"></p>
+                  <button id="resultAction"></button><button id="returnTitle" class="text-button">TITLE SCREEN</button>
+                </div>
+              </div>
+            </div>
+          </section>
+          <aside>
+            <section class="mission-title">
+              <div>
+                <div class="eyebrow"><i class="slashes"></i> <span id="missionNumber">MISSION 01</span></div>
+                <h1 id="missionName">VESPER RIFT</h1>
+                <p id="missionObjective"></p>
+              </div>
+              <div class="sector">
+                <svg><use href="#target" /></svg> <span id="sectorName">SECTOR 07</span>
+              </div>
+            </section>
+            <div class="telemetry">
+              <div class="portrait">
+                <img id="pilotImage" src="assets/kurai-focused.webp" alt="Kurai watches the flight instruments" />
+                <span id="pilotSignal" hidden>NO SIGNAL</span>
+              </div>
+              <div class="vital-stack">
+                <div class="identity">CAPT. KURAI <i></i></div>
+                <div class="vitals">
+                  <div class="vital shields">
+                    <div class="vital-label">
+                      <span
+                        ><svg><use href="#shield" /></svg> Shields</span
+                      ><b id="shieldValue">100%</b>
+                    </div>
+                    <div class="meter" id="shieldMeter"></div>
+                  </div>
+                  <div class="vital hull">
+                    <div class="vital-label">
+                      <span
+                        ><svg><use href="#hull" /></svg> Hull</span
+                      ><b id="hullValue">100%</b>
+                    </div>
+                    <div class="meter" id="hullMeter"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="fleetRadio" class="fleet-radio" hidden>
+              <img id="radioPortrait" alt="" />
+              <div aria-live="polite"><strong id="radioCall"></strong><span id="radioText"></span></div>
+            </div>
+            <div class="feed"><i class="led"></i><b id="feedState">FLIGHT SYSTEM ONLINE</b></div>
+            <div class="flight-keys"><kbd>WASD</kbd> / <kbd>↑←↓→</kbd> Move<br><kbd>SPACE</kbd> Fire <kbd>P</kbd> Pause</div>
+            <div class="touch-pad" id="touchPad"><svg aria-hidden="true"><use href="#target"/></svg><span>DRAG TO FLY &amp; FIRE</span></div>
+          </aside>
+        </div>
+      </div>
+      <section id="storyScreen" class="story-screen" hidden aria-label="Story transmission">
+        <div class="story-top"><span class="transmission"><i></i>INCOMING TRANSMISSION</span><button id="skipScene">SKIP SCENE »</button></div>
+        <div class="story-location"><div class="cover-kicker" id="storyChapter"></div><h2 id="storyLocation"></h2></div>
+        <div class="conversation">
+          <img id="speakerImage" alt="" />
+          <div class="speech"><div class="speaker-role" id="speakerRole"></div><h3 id="speakerName"></h3><p id="lineText"></p>
+            <div class="conversation-actions"><span id="lineCount"></span><button class="primary" id="advance"></button></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <dialog id="archive" aria-labelledby="archiveTitle">
+      <div class="archive-head"><span class="cover-kicker" id="archiveLabel"></span><button id="closeArchive" aria-label="Close dialog">×</button></div>
+      <h2 id="archiveTitle"></h2><div id="archiveBody"></div>
+    </dialog>
+    <div class="sr" aria-live="polite" id="announcement"></div>
+  </body>
+</html>
